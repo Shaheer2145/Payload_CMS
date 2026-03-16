@@ -72,6 +72,10 @@ export interface Config {
     media: Media;
     categories: Category;
     users: User;
+    departments: Department;
+    news: News;
+    facilities: Facility;
+    schedule: Schedule;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -94,6 +98,10 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     users: UsersSelect<false> | UsersSelect<true>;
+    departments: DepartmentsSelect<false> | DepartmentsSelect<true>;
+    news: NewsSelect<false> | NewsSelect<true>;
+    facilities: FacilitiesSelect<false> | FacilitiesSelect<true>;
+    schedule: ScheduleSelect<false> | ScheduleSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -185,6 +193,18 @@ export interface Page {
               | ({
                   relationTo: 'posts';
                   value: string | Post;
+                } | null)
+              | ({
+                  relationTo: 'departments';
+                  value: string | Department;
+                } | null)
+              | ({
+                  relationTo: 'facilities';
+                  value: string | Facility;
+                } | null)
+              | ({
+                  relationTo: 'schedule';
+                  value: string | Schedule;
                 } | null);
             url?: string | null;
             label: string;
@@ -438,6 +458,51 @@ export interface User {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments".
+ */
+export interface Department {
+  id: string;
+  title: string;
+  description: string;
+  icon: string | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "facilities".
+ */
+export interface Facility {
+  id: string;
+  title: string;
+  description: string;
+  icon: string | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "schedule".
+ */
+export interface Schedule {
+  id: string;
+  name: string;
+  title: string;
+  department: 'Cardiology' | 'Gynecology' | 'Pediatrics' | 'Dermatology' | 'Urology' | 'ENT';
+  specialty?: string | null;
+  doctorImage?: (string | null) | Media;
+  schedule?:
+    | {
+        days: string;
+        time: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CallToActionBlock".
  */
 export interface CallToActionBlock {
@@ -469,6 +534,18 @@ export interface CallToActionBlock {
             | ({
                 relationTo: 'posts';
                 value: string | Post;
+              } | null)
+            | ({
+                relationTo: 'departments';
+                value: string | Department;
+              } | null)
+            | ({
+                relationTo: 'facilities';
+                value: string | Facility;
+              } | null)
+            | ({
+                relationTo: 'schedule';
+                value: string | Schedule;
               } | null);
           url?: string | null;
           label: string;
@@ -492,7 +569,8 @@ export interface ContentBlock {
   columns?:
     | {
         size?: ('oneThird' | 'half' | 'twoThirds' | 'full') | null;
-        richText?: {
+        type?: ('text' | 'media' | 'group' | 'array') | null;
+        text?: {
           root: {
             type: string;
             children: {
@@ -507,6 +585,60 @@ export interface ContentBlock {
           };
           [k: string]: unknown;
         } | null;
+        media?: (string | null) | Media;
+        groupSection?: {
+          badgeText: string;
+          mainTitle: string;
+          description: {
+            root: {
+              type: string;
+              children: {
+                type: any;
+                version: number;
+                [k: string]: unknown;
+              }[];
+              direction: ('ltr' | 'rtl') | null;
+              format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+              indent: number;
+              version: number;
+            };
+            [k: string]: unknown;
+          };
+          features?:
+            | {
+                FeatureText?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+        };
+        arraySection?:
+          | {
+              mainBox: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              };
+              features?:
+                | {
+                    title: string;
+                    icon: string | Media;
+                    description: string;
+                    id?: string | null;
+                  }[]
+                | null;
+              id?: string | null;
+            }[]
+          | null;
         enableLink?: boolean | null;
         link?: {
           type?: ('reference' | 'custom') | null;
@@ -519,6 +651,18 @@ export interface ContentBlock {
             | ({
                 relationTo: 'posts';
                 value: string | Post;
+              } | null)
+            | ({
+                relationTo: 'departments';
+                value: string | Department;
+              } | null)
+            | ({
+                relationTo: 'facilities';
+                value: string | Facility;
+              } | null)
+            | ({
+                relationTo: 'schedule';
+                value: string | Schedule;
               } | null);
           url?: string | null;
           label: string;
@@ -565,18 +709,52 @@ export interface ArchiveBlock {
     [k: string]: unknown;
   } | null;
   populateBy?: ('collection' | 'selection') | null;
-  relationTo?: 'posts' | null;
+  relationTo?: ('posts' | 'pages' | 'departments' | 'news' | 'facilities' | 'schedule') | null;
   categories?: (string | Category)[] | null;
   limit?: number | null;
   selectedDocs?:
-    | {
-        relationTo: 'posts';
-        value: string | Post;
-      }[]
+    | (
+        | {
+            relationTo: 'posts';
+            value: string | Post;
+          }
+        | {
+            relationTo: 'departments';
+            value: string | Department;
+          }
+        | {
+            relationTo: 'pages';
+            value: string | Page;
+          }
+        | {
+            relationTo: 'news';
+            value: string | News;
+          }
+        | {
+            relationTo: 'facilities';
+            value: string | Facility;
+          }
+        | {
+            relationTo: 'schedule';
+            value: string | Schedule;
+          }
+      )[]
     | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'archive';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: string;
+  title: string;
+  description: string;
+  icon: string | Media;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -989,6 +1167,22 @@ export interface PayloadLockedDocument {
         value: string | User;
       } | null)
     | ({
+        relationTo: 'departments';
+        value: string | Department;
+      } | null)
+    | ({
+        relationTo: 'news';
+        value: string | News;
+      } | null)
+    | ({
+        relationTo: 'facilities';
+        value: string | Facility;
+      } | null)
+    | ({
+        relationTo: 'schedule';
+        value: string | Schedule;
+      } | null)
+    | ({
         relationTo: 'redirects';
         value: string | Redirect;
       } | null)
@@ -1134,7 +1328,36 @@ export interface ContentBlockSelect<T extends boolean = true> {
     | T
     | {
         size?: T;
-        richText?: T;
+        type?: T;
+        text?: T;
+        media?: T;
+        groupSection?:
+          | T
+          | {
+              badgeText?: T;
+              mainTitle?: T;
+              description?: T;
+              features?:
+                | T
+                | {
+                    FeatureText?: T;
+                    id?: T;
+                  };
+            };
+        arraySection?:
+          | T
+          | {
+              mainBox?: T;
+              features?:
+                | T
+                | {
+                    title?: T;
+                    icon?: T;
+                    description?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
         enableLink?: T;
         link?:
           | T
@@ -1352,6 +1575,59 @@ export interface UsersSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "departments_select".
+ */
+export interface DepartmentsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  icon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news_select".
+ */
+export interface NewsSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  icon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "facilities_select".
+ */
+export interface FacilitiesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  icon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "schedule_select".
+ */
+export interface ScheduleSelect<T extends boolean = true> {
+  name?: T;
+  title?: T;
+  department?: T;
+  specialty?: T;
+  doctorImage?: T;
+  schedule?:
+    | T
+    | {
+        days?: T;
+        time?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1634,6 +1910,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface Header {
   id: string;
+  media: string | Media;
   navItems?:
     | {
         link: {
@@ -1647,6 +1924,18 @@ export interface Header {
             | ({
                 relationTo: 'posts';
                 value: string | Post;
+              } | null)
+            | ({
+                relationTo: 'departments';
+                value: string | Department;
+              } | null)
+            | ({
+                relationTo: 'facilities';
+                value: string | Facility;
+              } | null)
+            | ({
+                relationTo: 'schedule';
+                value: string | Schedule;
               } | null);
           url?: string | null;
           label: string;
@@ -1663,26 +1952,58 @@ export interface Header {
  */
 export interface Footer {
   id: string;
-  navItems?:
+  logo?: (string | null) | Media;
+  description?: string | null;
+  socialBlock?:
     | {
-        link: {
-          type?: ('reference' | 'custom') | null;
-          newTab?: boolean | null;
-          reference?:
-            | ({
-                relationTo: 'pages';
-                value: string | Page;
-              } | null)
-            | ({
-                relationTo: 'posts';
-                value: string | Post;
-              } | null);
-          url?: string | null;
-          label: string;
-        };
+        testimonials?: (string | null) | Media;
         id?: string | null;
       }[]
     | null;
+  columns?:
+    | {
+        label?: string | null;
+        navItems?:
+          | {
+              link: {
+                type?: ('reference' | 'custom') | null;
+                newTab?: boolean | null;
+                reference?:
+                  | ({
+                      relationTo: 'pages';
+                      value: string | Page;
+                    } | null)
+                  | ({
+                      relationTo: 'posts';
+                      value: string | Post;
+                    } | null)
+                  | ({
+                      relationTo: 'departments';
+                      value: string | Department;
+                    } | null)
+                  | ({
+                      relationTo: 'facilities';
+                      value: string | Facility;
+                    } | null)
+                  | ({
+                      relationTo: 'schedule';
+                      value: string | Schedule;
+                    } | null);
+                url?: string | null;
+                label: string;
+              };
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  address?: {
+    mapImage?: (string | null) | Media;
+    email?: string | null;
+    phone?: string | null;
+  };
+  copyright?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1691,6 +2012,7 @@ export interface Footer {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  media?: T;
   navItems?:
     | T
     | {
@@ -1714,20 +2036,42 @@ export interface HeaderSelect<T extends boolean = true> {
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
-  navItems?:
+  logo?: T;
+  description?: T;
+  socialBlock?:
     | T
     | {
-        link?:
+        testimonials?: T;
+        id?: T;
+      };
+  columns?:
+    | T
+    | {
+        label?: T;
+        navItems?:
           | T
           | {
-              type?: T;
-              newTab?: T;
-              reference?: T;
-              url?: T;
-              label?: T;
+              link?:
+                | T
+                | {
+                    type?: T;
+                    newTab?: T;
+                    reference?: T;
+                    url?: T;
+                    label?: T;
+                  };
+              id?: T;
             };
         id?: T;
       };
+  address?:
+    | T
+    | {
+        mapImage?: T;
+        email?: T;
+        phone?: T;
+      };
+  copyright?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

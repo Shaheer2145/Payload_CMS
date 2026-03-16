@@ -34,8 +34,22 @@ const columnFields: Field[] = [
     ],
   },
   {
-    name: 'richText',
+    name: 'type',
+    type: 'select',
+    defaultValue: 'text',
+    options: [
+      { label: 'Text', value: 'text' },
+      { label: 'Media (Image)', value: 'media' },
+      { label: 'Group', value: 'group' },
+      { label: 'Array', value: 'array' }
+    ],
+  },
+  {
+    name: 'text',
     type: 'richText',
+    admin: {
+      condition: (_, siblingData) => siblingData?.type === 'text',
+    },
     editor: lexicalEditor({
       features: ({ rootFeatures }) => {
         return [
@@ -45,9 +59,112 @@ const columnFields: Field[] = [
           InlineToolbarFeature(),
         ]
       },
-    }),
-    label: false,
+    })
   },
+  {
+    name: 'media',
+    type: 'upload',
+    relationTo: 'media',
+    required: true,
+    admin: {
+      condition: (_, siblingData) => siblingData?.type === 'media',
+    },
+  },
+  {
+    name: 'groupSection',
+    type: 'group',
+    admin: {
+      condition: (_, siblingData) => siblingData?.type === 'group',
+    },
+    fields: [
+      {
+        name: 'badgeText',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'mainTitle',
+        type: 'text',
+        required: true,
+      },
+      {
+        name: 'description',
+        type: 'richText',
+        required: true,
+        editor: lexicalEditor({
+          features: ({ rootFeatures }) => {
+            return [
+              ...rootFeatures,
+              HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
+              FixedToolbarFeature(),
+              InlineToolbarFeature(),
+            ]
+          },
+        })
+      },
+      {
+        name: 'features',
+        type: 'array',
+        fields: [
+          {
+            name: 'FeatureText',
+            type: 'text',
+          }
+        ]
+      }
+    ]
+  },
+  {
+    name: 'arraySection',
+    type: 'array',
+    admin: {
+      condition: (_, siblingData) => siblingData?.type === 'array',
+      initCollapsed: false,
+
+    },
+
+    fields: [
+      {
+        name: 'mainBox',
+        type: 'richText',
+        required: true,
+        editor: lexicalEditor({
+          features: ({ rootFeatures }) => {
+            return [
+              ...rootFeatures,
+              HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
+              FixedToolbarFeature(),
+              InlineToolbarFeature(),
+            ]
+          },
+        })
+      },
+      {
+        name: 'features',
+        type: 'array',
+        fields: [
+          {
+            name: 'title',
+            type: 'text',
+            required: true,
+          },
+          {
+            name: 'icon',
+            type: 'upload',
+            relationTo: 'media',
+            required: true
+          },
+          {
+            name: 'description',
+            type: 'textarea',
+            required: true
+          }
+        ]
+      },
+
+    ]
+  },
+
   {
     name: 'enableLink',
     type: 'checkbox',

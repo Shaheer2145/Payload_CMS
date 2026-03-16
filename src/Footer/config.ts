@@ -10,20 +10,52 @@ export const Footer: GlobalConfig = {
   },
   fields: [
     {
-      name: 'navItems',
+      name: 'logo',
+      type: 'upload',
+      relationTo: 'media',
+    },
+    {
+      name: 'description',
+      type: 'textarea',
+    },
+    {
+      name: 'socialBlock',
       type: 'array',
       fields: [
-        link({
-          appearances: false,
-        }),
-      ],
-      maxRows: 6,
-      admin: {
-        initCollapsed: true,
-        components: {
-          RowLabel: '@/Footer/RowLabel#RowLabel',
+        {
+          name: 'testimonials',
+          type: 'upload',
+          relationTo: 'media',
+        }
+      ]
+
+    },
+    {
+      name: 'columns',
+      type: 'array',
+      minRows: 2,
+      maxRows: 2,
+      fields: [
+        { name: 'label', type: 'text' },
+        {
+          name: 'navItems',
+          type: 'array',
+          fields: [link({ appearances: false })],
         },
-      },
+      ],
+    },
+    {
+      name: 'address',
+      type: 'group',
+      fields: [
+        { name: 'mapImage', type: 'upload', relationTo: 'media' },
+        { name: 'email', type: 'email' },
+        { name: 'phone', type: 'text' },
+      ],
+    },
+    {
+      name: 'copyright',
+      type: 'text',
     },
   ],
   hooks: {
