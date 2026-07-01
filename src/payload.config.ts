@@ -10,9 +10,11 @@ import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Users } from './collections/Users'
 import { News } from './collections/News'
-import { Facilities} from './collections/Facilities'
+import { Facilities } from './collections/Facilities'
 import { Departments } from './collections/Departments'
 import { Schedule } from './collections/Schedule'
+import { Stories } from './collections/Stories'
+import { Stats } from './collections/Stats'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
@@ -64,7 +66,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.DATABASE_URL || '',
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Departments, News, Facilities,Schedule],
+  collections: [Pages, Posts, Media, Categories, Users, Departments, News, Facilities, Schedule, Stories, Stats],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [Header, Footer],
   plugins,

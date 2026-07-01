@@ -76,6 +76,8 @@ export interface Config {
     news: News;
     facilities: Facility;
     schedule: Schedule;
+    stories: Story;
+    stats: Stat;
     redirects: Redirect;
     forms: Form;
     'form-submissions': FormSubmission;
@@ -102,6 +104,8 @@ export interface Config {
     news: NewsSelect<false> | NewsSelect<true>;
     facilities: FacilitiesSelect<false> | FacilitiesSelect<true>;
     schedule: ScheduleSelect<false> | ScheduleSelect<true>;
+    stories: StoriesSelect<false> | StoriesSelect<true>;
+    stats: StatsSelect<false> | StatsSelect<true>;
     redirects: RedirectsSelect<false> | RedirectsSelect<true>;
     forms: FormsSelect<false> | FormsSelect<true>;
     'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
@@ -205,6 +209,14 @@ export interface Page {
               | ({
                   relationTo: 'schedule';
                   value: string | Schedule;
+                } | null)
+              | ({
+                  relationTo: 'stories';
+                  value: string | Story;
+                } | null)
+              | ({
+                  relationTo: 'stats';
+                  value: string | Stat;
                 } | null);
             url?: string | null;
             label: string;
@@ -503,6 +515,31 @@ export interface Schedule {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stories".
+ */
+export interface Story {
+  id: string;
+  name: string;
+  position: string;
+  description: string;
+  icon: string | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stats".
+ */
+export interface Stat {
+  id: string;
+  value: string;
+  title: string;
+  icon: string | Media;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "CallToActionBlock".
  */
 export interface CallToActionBlock {
@@ -546,6 +583,14 @@ export interface CallToActionBlock {
             | ({
                 relationTo: 'schedule';
                 value: string | Schedule;
+              } | null)
+            | ({
+                relationTo: 'stories';
+                value: string | Story;
+              } | null)
+            | ({
+                relationTo: 'stats';
+                value: string | Stat;
               } | null);
           url?: string | null;
           label: string;
@@ -663,6 +708,14 @@ export interface ContentBlock {
             | ({
                 relationTo: 'schedule';
                 value: string | Schedule;
+              } | null)
+            | ({
+                relationTo: 'stories';
+                value: string | Story;
+              } | null)
+            | ({
+                relationTo: 'stats';
+                value: string | Stat;
               } | null);
           url?: string | null;
           label: string;
@@ -709,7 +762,7 @@ export interface ArchiveBlock {
     [k: string]: unknown;
   } | null;
   populateBy?: ('collection' | 'selection') | null;
-  relationTo?: ('posts' | 'pages' | 'departments' | 'news' | 'facilities' | 'schedule') | null;
+  relationTo?: ('posts' | 'pages' | 'departments' | 'stories' | 'stats' | 'news' | 'facilities' | 'schedule') | null;
   categories?: (string | Category)[] | null;
   limit?: number | null;
   selectedDocs?:
@@ -737,6 +790,14 @@ export interface ArchiveBlock {
         | {
             relationTo: 'schedule';
             value: string | Schedule;
+          }
+        | {
+            relationTo: 'stories';
+            value: string | Story;
+          }
+        | {
+            relationTo: 'stats';
+            value: string | Stat;
           }
       )[]
     | null;
@@ -1181,6 +1242,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'schedule';
         value: string | Schedule;
+      } | null)
+    | ({
+        relationTo: 'stories';
+        value: string | Story;
+      } | null)
+    | ({
+        relationTo: 'stats';
+        value: string | Stat;
       } | null)
     | ({
         relationTo: 'redirects';
@@ -1631,6 +1700,29 @@ export interface ScheduleSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stories_select".
+ */
+export interface StoriesSelect<T extends boolean = true> {
+  name?: T;
+  position?: T;
+  description?: T;
+  icon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "stats_select".
+ */
+export interface StatsSelect<T extends boolean = true> {
+  value?: T;
+  title?: T;
+  icon?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "redirects_select".
  */
 export interface RedirectsSelect<T extends boolean = true> {
@@ -1936,6 +2028,14 @@ export interface Header {
             | ({
                 relationTo: 'schedule';
                 value: string | Schedule;
+              } | null)
+            | ({
+                relationTo: 'stories';
+                value: string | Story;
+              } | null)
+            | ({
+                relationTo: 'stats';
+                value: string | Stat;
               } | null);
           url?: string | null;
           label: string;
@@ -1988,6 +2088,14 @@ export interface Footer {
                   | ({
                       relationTo: 'schedule';
                       value: string | Schedule;
+                    } | null)
+                  | ({
+                      relationTo: 'stories';
+                      value: string | Story;
+                    } | null)
+                  | ({
+                      relationTo: 'stats';
+                      value: string | Stat;
                     } | null);
                 url?: string | null;
                 label: string;
